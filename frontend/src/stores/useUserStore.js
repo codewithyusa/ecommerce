@@ -123,4 +123,42 @@ export const useUserStore = create((set, get) => ({
       throw error;
     }
   },
+
+
+updateProfile: async ({ name, email }) => {
+  set({ loading: true });
+
+  try {
+    const data = await authRequest({
+      url: "/update-profile",
+      method: "PUT",
+      data: { name, email },
+    });
+
+    set({ user: data, loading: false });
+    toast.success("Profile updated!");
+  } catch (error) {
+    set({ loading: false });
+    toast.error(error.message || "Failed to update profile");
+  }
+},
+
+changePassword: async ({ currentPassword, newPassword }) => {
+  set({ loading: true });
+
+  try {
+    await authRequest({
+      url: "/change-password",
+      method: "PUT",
+      data: { currentPassword, newPassword },
+    });
+
+    set({ loading: false });
+    toast.success("Password updated!");
+  } catch (error) {
+    set({ loading: false });
+    toast.error(error.message || "Failed to update password");
+  }
+},
+
 }));

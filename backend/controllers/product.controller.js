@@ -14,7 +14,7 @@ export const getAllProducts = async (req, res) => {
 
 export const getFeaturedProducts = async (req, res) => {
   try {
-    await redis.get("featured_products");
+    const featuredProducts = await redis.get("featured_products");
     if (featuredProducts) {
       return res.json(JSON.parse(featuredProducts));
     }
@@ -65,8 +65,8 @@ export const deleteProduct = async (req, res) => {
   try {
     const productId = await Product.findById(req.params.id);
 
-    if (!Product.image) {
-      const publicId = Product.image.split("/").pop().split(".")[0]; //this will get the id of the image
+    if (!productId.image) {
+      const publicId = productId.image.split("/").pop().split(".")[0]; //this will get the id of the image
       try {
         await cloudinary.uploader.destroy(`products/${publicId}`);
         console.log("Image deleted from Cloudinary");
@@ -74,7 +74,7 @@ export const deleteProduct = async (req, res) => {
         console.error("Error deleting image from Cloudinary:", error.message);
       }
     }
-    await Product.findByIdAndDelete(req.params.id);
+    await Product.findByIdAndDelete(productId);
     res.json({ message: "Product deleted successfully" });
   } catch (error) {
     console.error("Error deleting product:", error.message);
